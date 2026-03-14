@@ -1,8 +1,12 @@
 const { createServer } = require("./src/server");
 
-const PORT = process.env.PORT || 3000;
-const { server } = createServer();
+const PORT = Number(process.env.PORT) || 3000;
 
-server.listen(PORT, () => {
-    console.log(`Listening on port ${PORT}`);
-});
+const start = async () => {
+    const { server } = await createServer();
+    server.listen(PORT, () => {
+        console.log(`Listening on port ${PORT}`);
+    });
+};
+
+start();
