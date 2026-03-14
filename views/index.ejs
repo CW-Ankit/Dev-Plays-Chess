@@ -4,68 +4,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chessdotcom</title>
+    <title><%= title %></title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        .chessboard {
-            display: grid;
-            grid-template-columns: repeat(8, minmax(0, 1fr));
-            grid-template-rows: repeat(8, minmax(0, 1fr));
-            width: 400px;
-            height: 400px;
-            transform: rotate(0deg);
-        }
-
-        .piece.white {
-            color: white;
-            filter: drop-shadow(0 0 2px rgba(0, 0, 0, 1));
-        }
-
-        .piece.black {
-            color: black;
-        }
-
-        .flipped {
-            transform: rotate(180deg);
-        }
-
-        .square {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .square.light {
-            background-color: #cbe5e9;
-        }
-
-        .square.dark {
-            background-color: #639eb5;
-        }
-
-        .piece {
-            font-size: 36px;
-            cursor: pointer;
-        }
-
-        .piece.draggable {
-            cursor: grab;
-        }
-
-        .dragging {
-            opacity: 0.5;
-        }
-
-        /* Rotate pieces for black player */
-        .flipped .piece {
-            transform: rotate(180deg);
-        }
-    </style>
+    <link rel="stylesheet" href="/stylesheets/style.css">
 </head>
 
 <body>
-    <div class="w-full h-screen flex items-center justify-center bg-zinc-900">
-        <div class="chessboard w-96 h-96 bg-blue-500"></div>
+    <div class="app-shell <%= isAuthenticated ? '' : 'blurred' %>" data-app-shell>
+        <section class="board-panel">
+            <div class="panel-header">
+                <h1>Chess Match</h1>
+                <p data-game-status>White to move</p>
+                <p data-player-role>You are Spectating</p>
+            </div>
+            <div class="chessboard"></div>
+        </section>
+
+        <aside class="auth-panel">
+            <h2>Current Player</h2>
+            <p>Name: <strong data-username><%= isAuthenticated ? username : 'Guest' %></strong></p>
+            <p>Preferred side: <strong data-preferred-role><%= preferredRole %></strong></p>
+            <p data-auth-message class="auth-message">Pick a name and side to start.</p>
+            <button data-leave class="logout-btn <%= isAuthenticated ? '' : 'hidden' %>">Leave Game</button>
+        </aside>
+    </div>
+
+    <div class="play-overlay <%= isAuthenticated ? 'hidden' : '' %>" data-play-overlay>
+        <div class="play-card">
+            <h2>Ready to Play?</h2>
+            <p>Enter your name and choose how you want to join this match.</p>
+            <form data-start-form class="auth-form">
+                <label>
+                    Your name
+                    <input type="text" name="name" maxlength="24" placeholder="e.g. Magnus" required>
+                </label>
+                <label>
+                    Play as
+                    <select name="preferredRole">
+                        <option value="any">Any available side</option>
+                        <option value="w">White</option>
+                        <option value="b">Black</option>
+                        <option value="spectator">Spectator</option>
+                    </select>
+                </label>
+                <button type="submit">Play</button>
+            </form>
+        </div>
     </div>
 
     <script src="https://cdn.socket.io/4.8.3/socket.io.min.js"
@@ -74,6 +58,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"
         integrity="sha512-xRllwz2gdZciIB+AkEbeq+gVhX8VB8XsfqeFbUh+SzHlN96dEduwtTuVuc2u9EROlmW9+yhRlxjif66ORpsgVA=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        window.__INITIAL_AUTH__ = {
+            isAuthenticated: <%- JSON.stringify(isAuthenticated) %>,
+            username: <%- JSON.stringify(username) %>,
+            preferredRole: <%- JSON.stringify(preferredRole) %>
+        };
+    </script>
     <script src="/javascripts/chessgame.js"></script>
 </body>
 
