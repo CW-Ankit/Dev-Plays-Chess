@@ -1,12 +1,17 @@
-const { createServer } = require("./src/app");
+const { createAppServer } = require("./src/app");
+const { runtime } = require("./src/config/runtime");
 
-const PORT = Number(process.env.PORT) || 3000;
+const startServer = async () => {
+    try {
+        const { server } = await createAppServer();
 
-const start = async () => {
-    const { server } = await createServer();
-    server.listen(PORT, () => {
-        console.log(`Listening on port ${PORT}`);
-    });
+        server.listen(runtime.port, () => {
+            console.log(`Listening on port ${runtime.port} (${runtime.nodeEnv})`);
+        });
+    } catch (error) {
+        console.error("Failed to start server:", error);
+        process.exit(1);
+    }
 };
 
-start();
+startServer();

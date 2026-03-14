@@ -1,36 +1,33 @@
 const crypto = require("crypto");
-const { connectDatabase } = require("../db/mongoClient");
+const Game = require("../models/Game");
+const { assertDatabaseConnection } = require("../db/mongoose");
+
+const mapGame = (gameDoc) => ({
+    id: gameDoc.publicId,
+    roomId: gameDoc.roomId,
+    result: gameDoc.result,
+    reason: gameDoc.reason,
+    pgn: gameDoc.pgn,
+    fen: gameDoc.fen,
+    players: gameDoc.players,
+    playerIds: gameDoc.playerIds,
+    createdAt: gameDoc.createdAt
+});
 
 const saveGame = async (game) => {
-    const { mode, db } = await connectDatabase();
-    const gameDoc = {
-        id: crypto.randomUUID(),
-        ...game,
-        createdAt: new Date().toISOString()
-    };
+    assertDatabaseConnection();
+    const gameDoc = await Game.create({
+        publicId: crypto.randomUUID(),
+        ...game
+    });
 
-    if (mode === "mongo") {
-        await db.collection("games").insertOne(gameDoc);
-    } else {
-        db.games.unshift(gameDoc);
-    }
-
-    return gameDoc;
+    return mapGame(gameDoc.toObject());
 };
 
 const listGamesForUser = async (userId) => {
-    const { mode, db } = await connectDatabase();
-
-    if (mode === "mongo") {
-        return db
-            .collection("games")
-            .find({ playerIds: userId })
-            .sort({ createdAt: -1 })
-            .limit(20)
-            .toArray();
-    }
-
-    return db.games.filter((g) => g.playerIds.includes(userId)).slice(0, 20);
+    assertDatabaseConnection();
+    const gameDocs = await Game.find({ playerIds: userId }).sort({ createdAt: -1 }).limit(20).lean();
+    return gameDocs.map(mapGame);
 };
 
 module.exports = {

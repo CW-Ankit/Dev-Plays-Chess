@@ -4,14 +4,14 @@ const path = require("path");
 const socketIo = require("socket.io");
 const { createRouter } = require("./routes");
 const { initializeGameSocket } = require("./sockets/gameSocket");
-const { connectDatabase } = require("./db/mongoClient");
+const { connectMongoose } = require("./db/mongoose");
 
-const createServer = async () => {
+const createAppServer = async () => {
     const app = express();
     const server = http.createServer(app);
     const io = socketIo(server);
 
-    await connectDatabase();
+    await connectMongoose();
 
     app.set("view engine", "ejs");
     app.use(express.static(path.join(__dirname, "../public")));
@@ -25,5 +25,5 @@ const createServer = async () => {
 };
 
 module.exports = {
-    createServer
+    createAppServer
 };

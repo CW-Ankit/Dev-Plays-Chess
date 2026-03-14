@@ -1,5 +1,6 @@
 const crypto = require("crypto");
-const { connectDatabase } = require("../db/mongoClient");
+const User = require("../models/User");
+const { assertDatabaseConnection } = require("../db/mongoose");
 
 const hashPassword = (password, salt = crypto.randomBytes(16).toString("hex")) => {
     const hash = crypto.scryptSync(password, salt, 64).toString("hex");
@@ -13,79 +14,63 @@ const validatePassword = (password, user) => {
 
 const normalizeEmail = (email = "") => email.trim().toLowerCase();
 
+const mapUser = (userDoc) => {
+    if (!userDoc) return null;
+
+    return {
+        id: userDoc.publicId,
+        email: userDoc.email,
+        name: userDoc.name,
+        hash: userDoc.hash,
+        salt: userDoc.salt,
+        settings: userDoc.settings || { theme: "classic" }
+    };
+};
+
 const findUserByEmail = async (email) => {
-    const { mode, db } = await connectDatabase();
+    assertDatabaseConnection();
     const normalized = normalizeEmail(email);
-
-    if (mode === "mongo") {
-        return db.collection("users").findOne({ email: normalized });
-    }
-
-    return db.users.get(normalized) || null;
+    const userDoc = await User.findOne({ email: normalized }).lean();
+    return mapUser(userDoc);
 };
 
 const findUserById = async (id) => {
-    const { mode, db } = await connectDatabase();
-
-    if (mode === "mongo") {
-        return db.collection("users").findOne({ id });
-    }
-
-    return [...db.users.values()].find((u) => u.id === id) || null;
+    assertDatabaseConnection();
+    const userDoc = await User.findOne({ publicId: id }).lean();
+    return mapUser(userDoc);
 };
 
 const createUser = async ({ email, password, name }) => {
-    const { mode, db } = await connectDatabase();
+    assertDatabaseConnection();
     const normalized = normalizeEmail(email);
-    const now = new Date().toISOString();
-
-    const userId = crypto.randomUUID();
     const passwordInfo = hashPassword(password);
 
-    const user = {
-        id: userId,
+    const userDoc = await User.create({
+        publicId: crypto.randomUUID(),
         email: normalized,
         name: name.trim(),
         hash: passwordInfo.hash,
         salt: passwordInfo.salt,
-        settings: { theme: "classic" },
-        createdAt: now,
-        updatedAt: now
-    };
+        settings: { theme: "classic" }
+    });
 
-    if (mode === "mongo") {
-        await db.collection("users").insertOne(user);
-    } else {
-        db.users.set(normalized, user);
-    }
-
-    return user;
+    return mapUser(userDoc.toObject());
 };
 
 const updateUserSettings = async (id, updates) => {
-    const { mode, db } = await connectDatabase();
-
-    if (mode === "mongo") {
-        await db.collection("users").updateOne(
-            { id },
-            {
-                $set: {
-                    "settings.theme": updates.theme,
-                    name: updates.name,
-                    updatedAt: new Date().toISOString()
-                }
+    assertDatabaseConnection();
+    const userDoc = await User.findOneAndUpdate(
+        { publicId: id },
+        {
+            $set: {
+                name: updates.name,
+                "settings.theme": updates.theme
             }
-        );
-        return db.collection("users").findOne({ id });
-    }
+        },
+        { new: true }
+    ).lean();
 
-    const user = [...db.users.values()].find((u) => u.id === id);
-    if (!user) return null;
-
-    user.settings.theme = updates.theme;
-    user.name = updates.name;
-    user.updatedAt = new Date().toISOString();
-    return user;
+    return mapUser(userDoc);
 };
 
 module.exports = {
