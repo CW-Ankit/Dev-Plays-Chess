@@ -1,55 +1,157 @@
-<style>
-        .chessboard {
-            display: grid;
-            grid-template-columns: repeat(8, minmax(0, 1fr));
-            grid-template-rows: repeat(8, minmax(0, 1fr));
-            width: 400px;
-            height: 400px;
-            transform: rotate(0deg);
-        }
+body {
+    margin: 0;
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    background: #0f172a;
+    color: #f8fafc;
+}
 
-        .piece.white {
-            color: white;
-            filter: drop-shadow(0 0 2px rgba(0, 0, 0, 1));
-        }
+.app-shell {
+    min-height: 100vh;
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    box-sizing: border-box;
+    transition: filter 0.3s ease;
+}
 
-        .piece.black {
-            color: black;
-        }
+.app-shell.blurred {
+    filter: blur(6px) brightness(0.7);
+    pointer-events: none;
+}
 
-        .flipped {
-            transform: rotate(180deg);
-        }
+.play-overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.45);
+    z-index: 99;
+}
 
-        .square {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+.play-card {
+    background: rgba(17, 24, 39, 0.96);
+    border: 1px solid #475569;
+    border-radius: 12px;
+    padding: 1.25rem;
+    width: min(92vw, 360px);
+}
 
-        .square.light {
-            background-color: #f0d9b5;
-        }
+.play-card h2 {
+    margin: 0;
+}
 
-        .square.dark {
-            background-color: #b58863;
-        }
+.play-card p {
+    color: #cbd5e1;
+}
 
-        .piece {
-            font-size: 36px;
-            cursor: pointer;
-        }
+.board-panel,
+.auth-panel {
+    background: #111827;
+    border: 1px solid #374151;
+    border-radius: 12px;
+    padding: 1rem;
+}
 
-        .piece.draggable {
-            cursor: grab;
-        }
+.panel-header {
+    margin-bottom: 0.75rem;
+}
 
-        .dragging {
-            opacity: 0.5;
-        }
+.panel-header h1 {
+    margin: 0 0 0.4rem;
+    font-size: 1.25rem;
+}
 
-        /* Rotate pieces for black player */
-        .flipped .piece {
-            transform: rotate(180deg);
-        }
-    </style>
+.panel-header p {
+    margin: 0.15rem 0;
+    color: #cbd5e1;
+}
+
+.chessboard {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    grid-template-rows: repeat(8, minmax(0, 1fr));
+    width: min(90vw, 480px);
+    height: min(90vw, 480px);
+    border: 1px solid #475569;
+    overflow: hidden;
+}
+
+.square {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.square.light { background-color: #f0d9b5; }
+.square.dark { background-color: #b58863; }
+.square.selected { box-shadow: inset 0 0 0 4px rgba(37, 99, 235, 0.75); }
+.square.last-move { box-shadow: inset 0 0 0 4px rgba(250, 204, 21, 0.45); }
+
+.square.valid-target::after {
+    content: "";
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.65);
+    position: absolute;
+}
+
+.piece.white { color: #fff; filter: drop-shadow(0 0 2px rgba(0, 0, 0, 1)); }
+.piece.black { color: #111; }
+
+.piece {
+    font-size: clamp(1.8rem, 4.2vw, 2.5rem);
+    cursor: pointer;
+    z-index: 2;
+    user-select: none;
+}
+
+.flipped { transform: rotate(180deg); }
+.flipped .piece { transform: rotate(180deg); }
+
+.auth-panel { width: min(96vw, 340px); }
+.auth-message { color: #bfdbfe; }
+.auth-message.error { color: #fca5a5; }
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin: 0.8rem 0;
+}
+
+.auth-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+}
+
+.auth-form input,
+.auth-form select,
+.auth-form button,
+.logout-btn {
+    padding: 0.55rem 0.65rem;
+    border-radius: 8px;
+    border: 1px solid #4b5563;
+    background: #0f172a;
+    color: #f8fafc;
+}
+
+.auth-form button,
+.logout-btn {
+    background: #1d4ed8;
+    border-color: #1d4ed8;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.hidden { display: none; }
+
+@media (max-width: 960px) {
+    .app-shell { flex-direction: column; }
+}
