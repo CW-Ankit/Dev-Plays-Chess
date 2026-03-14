@@ -6,7 +6,7 @@ const { createRouter } = require("./routes");
 const { initializeGameSocket } = require("./sockets/gameSocket");
 const { connectMongoose } = require("./db/mongoose");
 
-const createServer = async () => {
+const createAppServer = async () => {
     const app = express();
     const server = http.createServer(app);
     const io = socketIo(server);
@@ -25,5 +25,5 @@ const createServer = async () => {
 };
 
 module.exports = {
-    createServer
+    createAppServer
 };

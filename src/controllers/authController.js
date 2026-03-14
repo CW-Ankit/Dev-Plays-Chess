@@ -7,7 +7,7 @@ const {
     normalizeEmail
 } = require("../repositories/userRepository");
 const { listGamesForUser } = require("../repositories/gameRepository");
-const { createSession, setSessionCookie, clearSessionCookie, deleteSession } = require("../services/sessionService");
+const { setSessionCookie, clearSessionCookie } = require("../services/sessionService");
 const { COLOR_PREF } = require("../config/constants");
 
 const sanitizePreference = (value) => {
@@ -43,8 +43,12 @@ const authRegister = asyncHandler(async (req, res) => {
     }
 
     const user = await createUser({ email, password, name });
-    const sessionId = createSession({ userId: user.id, name: user.name, preferredColor, theme: user.settings.theme });
-    setSessionCookie(res, sessionId);
+    setSessionCookie(res, {
+        userId: user.id,
+        name: user.name,
+        preferredColor,
+        theme: user.settings.theme
+    });
 
     return res.json({
         message: "Account created.",
@@ -68,13 +72,12 @@ const authLogin = asyncHandler(async (req, res) => {
         return res.status(401).json({ message: "Invalid credentials." });
     }
 
-    const sessionId = createSession({
+    setSessionCookie(res, {
         userId: user.id,
         name: user.name,
         preferredColor,
         theme: user.settings?.theme || "classic"
     });
-    setSessionCookie(res, sessionId);
 
     return res.json({
         message: "Welcome back.",
@@ -89,9 +92,6 @@ const authLogin = asyncHandler(async (req, res) => {
 });
 
 const authLogout = asyncHandler(async (req, res) => {
-    if (req.sessionInfo?.sessionId) {
-        deleteSession(req.sessionInfo.sessionId);
-    }
     clearSessionCookie(res);
     return res.json({ message: "Logged out." });
 });
@@ -127,9 +127,12 @@ const updateSettings = asyncHandler(async (req, res) => {
     const user = await updateUserSettings(userId, { name, theme });
     if (!user) return res.status(404).json({ message: "User not found." });
 
-    req.sessionInfo.data.name = name;
-    req.sessionInfo.data.theme = theme;
-    req.sessionInfo.data.preferredColor = preferredColor;
+    setSessionCookie(res, {
+        userId: user.id,
+        name: user.name,
+        preferredColor,
+        theme: user.settings?.theme || theme
+    });
 
     return res.json({
         message: "Settings updated.",

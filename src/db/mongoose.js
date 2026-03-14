@@ -1,10 +1,10 @@
 const mongoose = require("mongoose");
-const { env } = require("../config/env");
+const { runtime } = require("../config/runtime");
 
 let isConnected = false;
 
 const connectMongoose = async () => {
-    if (!env.mongoUri) {
+    if (!runtime.mongoUri) {
         console.warn("[db] MONGO_URI/MONGODB_URI not set. Database-backed features will be unavailable.");
         return null;
     }
@@ -15,11 +15,12 @@ const connectMongoose = async () => {
     }
 
     try {
-        await mongoose.connect(env.mongoUri, {
-            dbName: env.mongoDbName,
+        await mongoose.connect(runtime.mongoUri, {
+            dbName: runtime.mongoDbName,
             autoIndex: true,
             serverSelectionTimeoutMS: 5000
         });
+
         isConnected = true;
         return mongoose.connection;
     } catch (error) {

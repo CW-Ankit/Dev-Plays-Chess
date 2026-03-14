@@ -1,11 +1,12 @@
-const { defineServer } = require("./app");
-const { env } = require("./src/config/env");
+const { createAppServer } = require("./src/app");
+const { runtime } = require("./src/config/runtime");
 
-const start = async () => {
+const startServer = async () => {
     try {
-        const { server } = await defineServer();
-        server.listen(env.port, () => {
-            console.log(`Listening on port ${env.port} (${env.nodeEnv})`);
+        const { server } = await createAppServer();
+
+        server.listen(runtime.port, () => {
+            console.log(`Listening on port ${runtime.port} (${runtime.nodeEnv})`);
         });
     } catch (error) {
         console.error("Failed to start server:", error);
@@ -13,4 +14,4 @@ const start = async () => {
     }
 };
 
-start();
+startServer();
