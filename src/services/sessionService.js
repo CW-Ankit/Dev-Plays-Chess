@@ -32,18 +32,12 @@ const createSession = (payload) => {
     return sessionId;
 };
 
-const getSession = (sessionId) => {
-    if (!sessionId) return null;
-    return sessions.get(sessionId) || null;
-};
+const getSession = (sessionId) => sessions.get(sessionId) || null;
 
 const getSessionFromRequest = (req) => {
     const cookies = parseCookies(req.headers.cookie);
     const sessionId = cookies[SESSION_COOKIE];
-
-    if (!sessionId) {
-        return null;
-    }
+    if (!sessionId) return null;
 
     const data = getSession(sessionId);
     if (!data) return null;
@@ -51,8 +45,8 @@ const getSessionFromRequest = (req) => {
     return { sessionId, data };
 };
 
-const getSessionFromSocket = (socketInstance) => {
-    const cookies = parseCookies(socketInstance.handshake.headers.cookie);
+const getSessionFromSocket = (socket) => {
+    const cookies = parseCookies(socket.handshake.headers.cookie);
     const sessionId = cookies[SESSION_COOKIE];
     if (!sessionId) return null;
 
@@ -62,18 +56,14 @@ const getSessionFromSocket = (socketInstance) => {
     return { sessionId, data };
 };
 
-const deleteSession = (sessionId) => {
-    if (!sessionId) return;
-    sessions.delete(sessionId);
-};
+const deleteSession = (sessionId) => sessions.delete(sessionId);
 
 module.exports = {
-    parseCookies,
-    setSessionCookie,
-    clearSessionCookie,
     createSession,
     getSession,
     getSessionFromRequest,
     getSessionFromSocket,
-    deleteSession
+    deleteSession,
+    setSessionCookie,
+    clearSessionCookie
 };

@@ -1,58 +1,46 @@
 const express = require("express");
-const { validateStartPayload } = require("../services/playerAuthService");
 const {
-    createSession,
-    setSessionCookie,
-    clearSessionCookie,
-    getSessionFromRequest,
-    deleteSession
-} = require("../services/sessionService");
-const { resetSeatByUsername } = require("../game/gameState");
+    authRegister,
+    authLogin,
+    authLogout,
+    getProfile,
+    updateSettings,
+    getGameHistory
+} = require("../controllers/authController");
+const { getSessionFromRequest } = require("../services/sessionService");
+const { COLOR_PREF } = require("../config/constants");
 
 const createRouter = () => {
     const router = express.Router();
 
+    router.use((req, _res, next) => {
+        req.sessionInfo = getSessionFromRequest(req);
+        next();
+    });
+
     router.get("/", (req, res) => {
-        const session = getSessionFromRequest(req);
+        const user = req.sessionInfo?.data || null;
+
         res.render("index", {
-            title: "Chess Game",
-            isAuthenticated: Boolean(session?.data?.username),
-            username: session?.data?.username || null,
-            preferredRole: session?.data?.preferredRole || "any"
+            title: "Chess.com Clone",
+            initialUser: user
+                ? {
+                      id: user.userId,
+                      name: user.name,
+                      preferredColor: user.preferredColor || COLOR_PREF.RANDOM,
+                      theme: user.theme || "classic"
+                  }
+                : null
         });
     });
 
-    router.post("/auth/start", (req, res) => {
-        const { error, data } = validateStartPayload(req.body || {});
-        if (error) {
-            return res.status(400).json({ message: error });
-        }
+    router.post("/api/auth/register", authRegister);
+    router.post("/api/auth/login", authLogin);
+    router.post("/api/auth/logout", authLogout);
 
-        const sessionId = createSession(data);
-        setSessionCookie(res, sessionId);
-
-        return res.json({
-            message: "Ready to play!",
-            username: data.username,
-            preferredRole: data.preferredRole
-        });
-    });
-
-    router.post("/auth/logout", (req, res) => {
-        const session = getSessionFromRequest(req);
-        const username = session?.data?.username || null;
-
-        if (session?.sessionId) {
-            deleteSession(session.sessionId);
-        }
-
-        if (username) {
-            resetSeatByUsername(username);
-        }
-
-        clearSessionCookie(res);
-        return res.json({ message: "Left the game." });
-    });
+    router.get("/api/user/profile", getProfile);
+    router.put("/api/user/settings", updateSettings);
+    router.get("/api/games/history", getGameHistory);
 
     return router;
 };
