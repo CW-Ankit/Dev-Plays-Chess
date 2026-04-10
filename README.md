@@ -1,42 +1,17 @@
-# Chessdotcom Clone
-
-Real-time chess matchmaking platform built with Express, Socket.IO, and MongoDB (Mongoose).
-
-## Core capabilities
-
-- JWT-based authentication stored in an HTTP-only cookie.
-- Real-time matchmaking with color-preference handling.
-- Live board state synchronization and move validation.
-- Persistent users and game history in MongoDB.
-
-## Runtime architecture
-
-1. `server.js` is the only process entrypoint.
-2. `src/app.js` assembles Express + HTTP + Socket.IO.
-3. `src/db/mongoose.js` initializes MongoDB connectivity.
-4. REST controllers handle account/profile/history operations.
-5. Socket handlers enforce auth and run game/match lifecycle events.
+Real-time chess matchmaking platform. This project is structured as a monorepo using pnpm workspaces.
 
 ## Project structure
 
 ```text
 .
-├── server.js
-├── src/
-│   ├── app.js
-│   ├── config/
-│   │   ├── constants.js
-│   │   └── runtime.js
-│   ├── controllers/
-│   ├── db/
-│   ├── game/
-│   ├── models/
-│   ├── repositories/
-│   ├── routes/
-│   ├── services/
-│   └── sockets/
-├── public/
-└── views/
+├── apps/
+│   └── web/            # Main Express application (Express + EJS + Sockets)
+│   └── mobile/         # React Native + Expo + NativeWind app
+├── packages/           # Shared libraries and configurations
+├── Docs/               # Project planning and architecture documents
+├── pnpm-workspace.yaml # pnpm configuration
+├── package.json        # Root workspace configuration
+└── README.md
 ```
 
 ## Configuration

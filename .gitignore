@@ -1,2 +1,32 @@
+# Dependencies
 node_modules
+.pnpm-store
+.pnpm-debug.log*
+
+# Build and Outputs
+dist
+build
+out
+.next
+.turbo
+*.log
+
+# Environment and Secrets
 .env
+.env.*
+!.env.example
+
+# IDE and System
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# Optional: You can uncomment the following line if you also want to stop indexing the huge lockfile
+# pnpm-lock.yaml
+
+# Local Workspace Overrides
+apps/web/.next
+apps/mobile/.expo
+apps/mobile/node_modules
+packages/*/dist

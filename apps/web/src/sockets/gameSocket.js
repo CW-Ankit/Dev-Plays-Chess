@@ -93,14 +93,23 @@ const finalizeGame = async (game, reason) => {
 const initializeGameSocket = (io) => {
     io.use((socket, next) => {
         const session = getSessionFromSocket(socket);
-        if (!session?.data?.userId) {
+        const guestData = socket.handshake.auth?.guestData;
+
+        if (!session?.data?.userId && !guestData) {
             return next(new Error("Unauthorized"));
         }
 
-        socket.data.userId = session.data.userId;
-        socket.data.name = session.data.name;
-        socket.data.theme = session.data.theme || "classic";
-        socket.data.preferredColor = session.data.preferredColor || COLOR_PREF.RANDOM;
+        if (session?.data?.userId) {
+            socket.data.userId = session.data.userId;
+            socket.data.name = session.data.name;
+            socket.data.theme = session.data.theme || "classic";
+            socket.data.preferredColor = session.data.preferredColor || COLOR_PREF.RANDOM;
+        } else {
+            socket.data.userId = `guest_${socket.id}`;
+            socket.data.name = guestData.name || "Mobile Guest";
+            socket.data.theme = "classic";
+            socket.data.preferredColor = COLOR_PREF.RANDOM;
+        }
         return next();
     });
 
