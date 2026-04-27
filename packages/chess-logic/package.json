@@ -1,0 +1,10 @@
+{
+  "name": "@chessdotcom/chess-logic",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./src/index.js",
+  "type": "module",
+  "dependencies": {
+    "chess.js": "^1.4.0"
+  }
+}

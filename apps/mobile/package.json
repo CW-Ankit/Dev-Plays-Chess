@@ -9,6 +9,8 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@chessdotcom/chess-logic": "workspace:*",
+    "@chessdotcom/types": "workspace:*",
     "chess.js": "^1.4.0",
     "expo": "~54.0.33",
     "expo-status-bar": "~3.0.9",
