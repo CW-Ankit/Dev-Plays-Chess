@@ -1,0 +1,23 @@
+{
+  "name": "@FastTechStack/backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "convex dev",
+    "deploy": "convex deploy",
+    "codegen": "convex dev --once",
+    "auth:generate": "auth generate --config ./convex/betterAuth/auth.ts --output ./convex/betterAuth/schema.ts",
+    "typecheck": "echo 'Convex typecheck runs via convex dev codegen'"
+  },
+  "dependencies": {
+    "@convex-dev/better-auth": "^0.10.2",
+    "@dodopayments/better-auth": "^1.1.8",
+    "better-auth": "1.4.9",
+    "convex": "^1.28.1",
+    "dodopayments": "^1.52.5"
+  },
+  "devDependencies": {
+    "@better-auth/cli": "1.4.9",
+    "typescript": "^5.9.3"
+  }
+}

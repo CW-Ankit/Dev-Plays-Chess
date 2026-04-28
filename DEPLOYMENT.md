@@ -1,120 +1,97 @@
-# Deployment Guide: DevPlaysChess
+# Deployment Guide (Vercel + Convex + Expo)
 
-This document outlines the procedures for deploying the DevPlaysChess platform to a production environment.
+## Overview
+This monorepo deploys the web application to Vercel while using Convex as the shared backend for both web and mobile clients.
 
-## Architecture Overview
+- Web: `apps/web` on Vercel.
+- Backend: `packages/backend` deployed with Convex.
+- Mobile: Expo application (`apps/mobile`) distributed through Expo/EAS builds.
 
-The application consists of two primary deployable units:
+## 1) Deploy Convex Backend
 
-1. Backend (API and Sockets): A Node.js server requiring persistent WebSocket connections.
-2. Frontend (Web): A static React application.
+### Prerequisites
+- Convex account and project created.
+- Environment variables available:
+  - `BETTER_AUTH_SECRET`
+  - `SITE_URL` (set to your production web URL)
+  - `DODO_PAYMENTS_API_KEY`
+  - `DODO_ENVIRONMENT` (`test_mode` or `live_mode`)
+  - `DODO_DEFAULT_PRODUCT_ID`
+  - `DODO_PAYMENTS_WEBHOOK_SECRET`
 
----
-
-## 1. Backend Deployment
-
-### Requirements
-
-- Environment: A server capable of running Node.js (e.g., DigitalOcean Droplet, AWS EC2, Render, or Railway).
-- Database: A MongoDB instance (MongoDB Atlas is recommended).
-
-### Environment Variables
-
-Configure the following variables in the production environment:
-
-| Variable | Description | Example |
-| :--- | :--- | :--- |
-| PORT | Port the server listens on | 3000 |
-| MONGO_URI | Connection string for MongoDB | mongodb+srv://user:pass@cluster.mongodb.net/chess |
-| JWT_SECRET | Secret key for signing JWTs | a-very-long-random-string |
-| NODE_ENV | Environment mode | production |
-
-### Deployment Steps (Linux/VPS)
-
-1. Clone and Install:
-
-   ```bash
-   git clone <repository-url>
-   cd dev-plays-chess
-   npm install
-   ```
-
-2. Process Management:
-   Use PM2 to ensure the server remains operational and restarts upon failure.
-
-   ```bash
-   npm install -g pm2
-   cd apps/api
-   pm2 start server.js --name "chess-api"
-   ```
-
-3. Reverse Proxy (Nginx):
-   Since Socket.io requires specific header handling for WebSocket upgrades, configure Nginx as follows:
-
-   ```nginx
-   server {
-       listen 80;
-       server_name api.yourdomain.com;
-
-       location / {
-           proxy_pass http://localhost:3000;
-           proxy_http_version 1.1;
-           proxy_set_header Upgrade $http_upgrade;
-           proxy_set_header Connection "upgrade";
-           proxy_set_header Host $host;
-           proxy_cache_bypass $http_upgrade;
-       }
-   }
-   ```
-
----
-
-## 2. Frontend Deployment
-
-### Requirements
-
-- Environment: Any static site hosting provider (Vercel, Netlify, AWS S3, or GitHub Pages).
-
-### Configuration
-
-Before executing the build, ensure the SERVER_URL in apps/web/src/App.tsx points to the production API endpoint:
-
-```typescript
-const SERVER_URL = 'https://api.yourdomain.com';
+### Commands
+```bash
+pnpm install
+pnpm --filter @FastTechStack/backend dev
+pnpm --filter @FastTechStack/backend auth:generate
+pnpm --filter @FastTechStack/backend deploy
 ```
 
-### Deployment Steps
+### Output Required for Clients
+Capture these values after deployment:
+- `CONVEX_DEPLOYMENT`
+- `NEXT_PUBLIC_CONVEX_URL`
+- Public site URL used by Better Auth plugin.
 
-1. Build the Project:
+## 2) Deploy Web App to Vercel
 
-   ```bash
-   cd apps/web
-   npm install
-   npm run build
-   ```
+### Vercel Project Settings
+- Framework Preset: `Next.js`
+- Root Directory: `apps/web`
+- Install Command: `pnpm install`
+- Build Command: `pnpm build`
+- Output Directory: `.next`
 
-2. Deploy Distribution Folder:
-   Upload the contents of the apps/web/dist folder to the static hosting provider.
-
----
-
-## Production Considerations
-
-### 1. CORS Configuration
-
-In apps/api/src/app.js, ensure the CORS origin list contains the production frontend domain:
-
-```javascript
-app.use(cors({ 
-    origin: ["https://yourdomain.com"], 
-    credentials: true 
-}));
+### Required Environment Variables (Vercel)
+```bash
+NEXT_PUBLIC_CONVEX_URL=<Convex Production URL>
+NEXT_PUBLIC_CONVEX_SITE_URL=https://<your-web-domain>
+DODO_DEFAULT_PRODUCT_ID=<Dodo Product ID>
 ```
 
-### 2. Secure Cookies
+Better Auth and Dodo secret variables are server-side Convex environment values and should not be set in public web variables.
 
-In apps/api/src/services/sessionService.js, the Secure flag is automatically applied to cookies when NODE_ENV is set to production. HTTPS is mandatory for production environments, otherwise, cookies will be rejected by the browser.
+### Deploy
+- Connect this repository to Vercel.
+- Set root directory to `apps/web`.
+- Add the environment variables above.
+- Trigger deployment.
 
-### 3. MongoDB Indexing
+## 3) Configure Better Auth + Dodo Webhook
+Create webhook endpoint in Dodo dashboard:
 
-Ensure that MongoDB collections have indices on publicId and email for the User collection to maintain optimal query performance.
+- Endpoint URL: `https://<your-domain>/api/auth/dodopayments/webhooks`
+- Events: subscription/payment events required by your billing workflow.
+- Copy generated secret into Convex as `DODO_PAYMENTS_WEBHOOK_SECRET`.
+
+## 4) Configure Mobile App for Production
+Vercel does not host native mobile binaries. Use Expo/EAS:
+
+```bash
+pnpm --filter @FastTechStack/mobile dev
+```
+
+Set production values in Expo environment:
+- `EXPO_PUBLIC_CONVEX_URL`
+- `EXPO_PUBLIC_CONVEX_SITE_URL`
+
+Build and distribute through EAS for iOS/Android release channels.
+
+## 5) Post-Deployment Verification Checklist
+
+### Web Verification
+1. Open deployed Vercel URL.
+2. Confirm "Stack Status" card reports environment values as configured.
+3. Trigger "Start Dodo Checkout (Better Auth)" and confirm redirect is attempted.
+4. Trigger "Open Customer Portal" and confirm portal redirect.
+5. Open `/api/stack/status` and verify JSON contains expected provider statuses.
+
+### Mobile Verification
+1. Run Expo app with production/staging env.
+2. Confirm home screen shows Convex URL and site URL presence.
+3. Use deep link button to open web stack status endpoint.
+
+## 6) Rollback Strategy
+- Vercel: rollback to previous deployment from dashboard.
+- Convex: redeploy previous backend commit and restore env variables.
+- Mobile: publish previous Expo update channel or previous EAS build.
