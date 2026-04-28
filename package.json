@@ -11,7 +11,9 @@
     "format:write": "turbo format:write",
     "test": "turbo test",
     "start:web": "pnpm --filter @devplays-chess/web dev",
+    "dev:web": "pnpm --filter @devplays-chess/web dev",
     "start:mobile": "pnpm --filter @devplays-chess/mobile dev",
+    "dev:mobile": "pnpm --filter @devplays-chess/mobile dev",
     "start:backend": "pnpm --filter @devplays-chess/backend dev",
     "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules .turbo"
   },
