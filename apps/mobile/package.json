@@ -1,5 +1,5 @@
 {
-  "name": "@FastTechStack/mobile",
+  "name": "@devplays-chess/mobile",
   "private": true,
   "main": "expo-router/entry",
   "scripts": {

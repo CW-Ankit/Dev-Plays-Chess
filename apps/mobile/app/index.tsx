@@ -64,7 +64,7 @@ const HomeScreen = () => {
           backgroundColor: "#F4F4F5"
         }}
       >
-        <Text style={{ fontSize: 24, fontWeight: "700" }}>Fast Tech Stack Mobile</Text>
+        <Text style={{ fontSize: 24, fontWeight: "700" }}>DevPlaysChess Mobile</Text>
         <Text style={{ textAlign: "center", marginBottom: 4 }}>
           Use this screen to validate mobile environment wiring and open integration references.
         </Text>

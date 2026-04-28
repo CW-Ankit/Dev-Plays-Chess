@@ -1,5 +1,5 @@
 {
-  "name": "FastTechStack",
+  "name": "devplays-chess",
   "private": true,
   "packageManager": "pnpm@10.18.1",
   "scripts": {
@@ -7,9 +7,13 @@
     "build": "turbo build",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
-    "FormatCheck": "turbo format:check",
-    "FormatWrite": "turbo format:write",
-    "Test": "turbo test"
+    "format:check": "turbo format:check",
+    "format:write": "turbo format:write",
+    "test": "turbo test",
+    "start:web": "pnpm --filter @devplays-chess/web dev",
+    "start:mobile": "pnpm --filter @devplays-chess/mobile dev",
+    "start:backend": "pnpm --filter @devplays-chess/backend dev",
+    "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules .turbo"
   },
   "devDependencies": {
     "turbo": "^2.5.8",

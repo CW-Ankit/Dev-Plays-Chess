@@ -70,7 +70,7 @@ export const authComponent = createClient<DataModel, typeof BetterAuthSchema>(
 export const createAuthOptions = (
   ctx: GenericCtx<DataModel>
 ): BetterAuthOptions => ({
-  appName: "FastTechStack",
+  appName: "DevPlaysChess",
   baseURL: process.env.SITE_URL,
   secret: process.env.BETTER_AUTH_SECRET,
   database: authComponent.adapter(ctx),

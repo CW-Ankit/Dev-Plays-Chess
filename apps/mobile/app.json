@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "FastTechStackMobile",
-    "slug": "fast-tech-stack-mobile",
-    "scheme": "fasttechstack",
+    "name": "DevPlaysChessMobile",
+    "slug": "devplays-chess-mobile",
+    "scheme": "devplayschess",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",

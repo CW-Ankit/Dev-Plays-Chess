@@ -22,9 +22,9 @@ This monorepo deploys the web application to Vercel while using Convex as the sh
 ### Commands
 ```bash
 pnpm install
-pnpm --filter @FastTechStack/backend dev
-pnpm --filter @FastTechStack/backend auth:generate
-pnpm --filter @FastTechStack/backend deploy
+pnpm --filter @devplays-chess/backend dev
+pnpm --filter @devplays-chess/backend auth:generate
+pnpm --filter @devplays-chess/backend deploy
 ```
 
 ### Output Required for Clients
@@ -68,7 +68,7 @@ Create webhook endpoint in Dodo dashboard:
 Vercel does not host native mobile binaries. Use Expo/EAS:
 
 ```bash
-pnpm --filter @FastTechStack/mobile dev
+pnpm --filter @devplays-chess/mobile dev
 ```
 
 Set production values in Expo environment:

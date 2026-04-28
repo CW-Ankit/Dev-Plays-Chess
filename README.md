@@ -1,4 +1,4 @@
-# Fast Tech Stack
+# DevPlaysChess
 
 A production-oriented monorepo starter built with Turborepo + pnpm using:
 
@@ -70,8 +70,8 @@ The backend package includes Convex + Better Auth integration scaffolding.
 After linking your Convex project, run:
 
 ```bash
-pnpm --filter @FastTechStack/backend dev
-pnpm --filter @FastTechStack/backend auth:generate
+pnpm --filter @devplays-chess/backend dev
+pnpm --filter @devplays-chess/backend auth:generate
 ```
 
 ## Deployment

@@ -1,4 +1,4 @@
-# Fast Tech Stack Usage Guide
+# DevPlaysChess Usage Guide
 
 ## 1. Prerequisites
 - Node.js 20+
@@ -29,14 +29,14 @@ EXPO_PUBLIC_CONVEX_SITE_URL=
 Set server-side secrets through Convex CLI or dashboard:
 
 ```bash
-pnpm --filter @FastTechStack/backend dev
+pnpm --filter @devplays-chess/backend dev
 # In another terminal after convex project is linked:
-pnpm --filter @FastTechStack/backend exec convex env set BETTER_AUTH_SECRET "<GeneratedSecret>"
-pnpm --filter @FastTechStack/backend exec convex env set SITE_URL "http://localhost:3000"
-pnpm --filter @FastTechStack/backend exec convex env set DODO_PAYMENTS_API_KEY "<DodoApiKey>"
-pnpm --filter @FastTechStack/backend exec convex env set DODO_ENVIRONMENT "test_mode"
-pnpm --filter @FastTechStack/backend exec convex env set DODO_DEFAULT_PRODUCT_ID "pdt_xxx"
-pnpm --filter @FastTechStack/backend exec convex env set DODO_PAYMENTS_WEBHOOK_SECRET "<WebhookSecret>"
+pnpm --filter @devplays-chess/backend exec convex env set BETTER_AUTH_SECRET "<GeneratedSecret>"
+pnpm --filter @devplays-chess/backend exec convex env set SITE_URL "http://localhost:3000"
+pnpm --filter @devplays-chess/backend exec convex env set DODO_PAYMENTS_API_KEY "<DodoApiKey>"
+pnpm --filter @devplays-chess/backend exec convex env set DODO_ENVIRONMENT "test_mode"
+pnpm --filter @devplays-chess/backend exec convex env set DODO_DEFAULT_PRODUCT_ID "pdt_xxx"
+pnpm --filter @devplays-chess/backend exec convex env set DODO_PAYMENTS_WEBHOOK_SECRET "<WebhookSecret>"
 ```
 
 ## 4. Run Development
@@ -50,8 +50,8 @@ This runs all workspace `dev` tasks via Turborepo.
 After first Convex initialization:
 
 ```bash
-pnpm --filter @FastTechStack/backend dev
-pnpm --filter @FastTechStack/backend auth:generate
+pnpm --filter @devplays-chess/backend dev
+pnpm --filter @devplays-chess/backend auth:generate
 ```
 
 - Keep `convex dev` running during development to keep generated API types updated.

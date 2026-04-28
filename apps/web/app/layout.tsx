@@ -7,7 +7,7 @@ import { ConvexClientProvider } from "@/components/ConvexClientProvider";
 import { getToken } from "@/lib/authServer";
 
 export const metadata: Metadata = {
-  title: "Fast Tech Stack",
+  title: "DevPlaysChess",
   description: "Turborepo template with Next.js, Expo, Convex, Better Auth, and Dodo Payments"
 };
 
