@@ -20,7 +20,7 @@ const RootLayout = async ({ children }: RootLayoutProps) => {
 
   return (
     <html lang="en">
-      <body>
+      <body suppressHydrationWarning>
         <ConvexClientProvider initialToken={token}>{children}</ConvexClientProvider>
       </body>
     </html>
