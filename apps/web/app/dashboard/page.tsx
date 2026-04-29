@@ -2,10 +2,30 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Play, TrendingUp, User, Award, Zap } from "lucide-react";
+import { Play, TrendingUp, User, Award, Zap, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { authClient } from "@/lib/authClient";
+import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
+  const user = useQuery(api.auth.getCurrentUser);
+  const router = useRouter();
+
+  const handleSignOut = async () => {
+    await authClient.signOut();
+    router.push("/login");
+  };
+
+  if (user === undefined) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       <motion.div 
@@ -15,12 +35,22 @@ export default function DashboardPage() {
       >
         <div>
           <h1 className="text-4xl font-bold mb-2">Console Home</h1>
-          <p className="text-text-secondary">Welcome back, Architect. Your environment is operational and ready for deployment.</p>
+          <p className="text-text-secondary">Welcome back, {user?.name || "Architect"}. Your environment is operational and ready for deployment.</p>
         </div>
-        <Button className="h-14 px-8 bg-accent text-background hover:bg-accent/90 font-bold text-lg rounded-2xl shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center gap-2">
-          <Play className="w-6 h-6 fill-current" />
-          Deploy Match
-        </Button>
+        <div className="flex items-center gap-4">
+          <Button 
+            onClick={handleSignOut}
+            variant="outline"
+            className="h-14 px-6 border-border text-text-secondary hover:text-text-primary hover:bg-secondary rounded-2xl transition-all flex items-center gap-2"
+          >
+            <LogOut className="w-5 h-5" />
+            Sign Out
+          </Button>
+          <Button className="h-14 px-8 bg-accent text-background hover:bg-accent/90 font-bold text-lg rounded-2xl shadow-[0_0_20px_rgba(16,185,129,0.3)] flex items-center gap-2">
+            <Play className="w-6 h-6 fill-current" />
+            Deploy Match
+          </Button>
+        </div>
       </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -59,7 +89,8 @@ export default function DashboardPage() {
             Player Profile
           </h3>
           <div className="space-y-4">
-            <ProfileItem label="Username" value="DevMaster_01" />
+            <ProfileItem label="Username" value={user?.name || "Guest"} />
+            <ProfileItem label="Email" value={user?.email || "N/A"} />
             <ProfileItem label="Preferred Side" value="White" />
             <ProfileItem label="Account Level" value="Senior Engineer" />
             <ProfileItem label="Total Matches" value="142" />

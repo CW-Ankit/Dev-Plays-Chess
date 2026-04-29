@@ -67,20 +67,24 @@ export const authComponent = createClient<DataModel, typeof BetterAuthSchema>(
   }
 );
 
-export const createAuthOptions = (
-  ctx: GenericCtx<DataModel>
-): BetterAuthOptions => ({
+export const authOptions = {
   appName: "DevPlaysChess",
   baseURL: process.env.SITE_URL,
   secret: process.env.BETTER_AUTH_SECRET,
-  database: authComponent.adapter(ctx),
   emailAndPassword: {
     enabled: true
   },
-  plugins: [convex({ authConfig: AuthConfig }), ...BuildDodoPlugins()]
+  plugins: [],
+};
+
+export const createAuthOptions = (
+  ctx: GenericCtx<DataModel>
+): BetterAuthOptions => ({
+  ...authOptions,
+  database: authComponent.adapter(ctx),
 });
 
-export const options = createAuthOptions({} as GenericCtx<DataModel>);
+export const options = authOptions;
 
 export const createAuth = (ctx: GenericCtx<DataModel>) => {
   return betterAuth(createAuthOptions(ctx));
