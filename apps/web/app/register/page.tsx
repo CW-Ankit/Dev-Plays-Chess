@@ -3,11 +3,13 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { Terminal, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { authClient } from "@/lib/authClient";
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -29,9 +31,9 @@ export default function RegisterPage() {
       });
 
       if (authError) {
-        setError(authError.message || "An error occurred during initialization.");
+        setError(authError.message || "Registration failed. Please check your details and try again.");
       } else {
-        window.location.href = "/dashboard";
+        router.push("/dashboard");
       }
     } catch (err) {
       setError("Unexpected system failure. Please retry.");

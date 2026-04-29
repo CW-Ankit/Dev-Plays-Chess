@@ -1,22 +1,23 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import { Chess } from "chess.js";
 import { Chessboard } from "react-chessboard";
 import { motion } from "framer-motion";
-import { Terminal, History, RotateCcw, Play, Cpu } from "lucide-react";
+import { Terminal, RotateCcw, Play, Cpu } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 export default function PlayPage() {
-  const [game, setGame] = useState(new Chess());
+  const gameRef = useRef(new Chess());
+  const [fen, setFen] = useState(gameRef.current.fen());
   const [moveHistory, setMoveHistory] = useState<string[]>([]);
 
   function makeAMove(move: any) {
     try {
-      const result = game.move(move);
+      const result = gameRef.current.move(move);
       if (result) {
-        setGame(new Chess(game.fen()));
-        setMoveHistory([...moveHistory, result.san]);
+        setFen(gameRef.current.fen());
+        setMoveHistory(prev => [...prev, result.san]);
         return true;
       }
     } catch (e) {
@@ -35,9 +36,21 @@ export default function PlayPage() {
   }
 
   function resetGame() {
-    setGame(new Chess());
+    gameRef.current = new Chess();
+    setFen(gameRef.current.fen());
     setMoveHistory([]);
   }
+
+  const movePairs = useMemo(() => {
+    return moveHistory.reduce((acc: any[], move, i) => {
+      if (i % 2 === 0) {
+        acc.push([move]);
+      } else {
+        acc[acc.length - 1].push(move);
+      }
+      return acc;
+    }, []);
+  }, [moveHistory]);
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 h-full">
@@ -49,8 +62,9 @@ export default function PlayPage() {
           className="w-full max-w-[600px] aspect-square shadow-2xl shadow-accent/10 border-8 border-secondary rounded-lg overflow-hidden"
         >
           <Chessboard 
-            position={game.fen()} 
+            position={fen} 
             onPieceDrop={onDrop} 
+            animationDuration={200}
             customDarkSquareStyle={{ backgroundColor: "#4b5563" }}
             customLightSquareStyle={{ backgroundColor: "#9ca3af" }}
           />
@@ -60,7 +74,7 @@ export default function PlayPage() {
           <Button onClick={resetGame} variant="outline" className="border-border text-text-secondary hover:text-text-primary">
             <RotateCcw className="w-4 h-4 mr-2" /> Reset Runtime
           </Button>
-          <Button className="bg-accent text-background font-bold">
+          <Button className="bg-accent text-background font-bold" onClick={resetGame}>
             <Play className="w-4 h-4 mr-2 fill-current" /> New Match
           </Button>
         </div>
@@ -84,14 +98,7 @@ export default function PlayPage() {
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-2">
-                {moveHistory.reduce((acc: any[], move, i) => {
-                  if (i % 2 === 0) {
-                    acc.push([move]);
-                  } else {
-                    acc[acc.length - 1].push(move);
-                  }
-                  return acc;
-                }, []).map((pair, i) => (
+                {movePairs.map((pair, i) => (
                   <React.Fragment key={i}>
                     <div className="text-xs font-mono p-2 bg-background border border-border rounded-lg flex justify-between">
                       <span className="text-text-secondary">{i + 1}.</span>
@@ -116,7 +123,7 @@ export default function PlayPage() {
             </div>
             <div className="flex items-center justify-between text-sm mt-2">
               <span className="text-text-secondary">Turn:</span>
-              <span className="font-bold">{game.turn() === 'w' ? 'White' : 'Black'}</span>
+              <span className="font-bold">{gameRef.current.turn() === 'w' ? 'White' : 'Black'}</span>
             </div>
           </div>
         </div>

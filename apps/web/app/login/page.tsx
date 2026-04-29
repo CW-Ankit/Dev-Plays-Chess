@@ -3,11 +3,13 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 import { Terminal, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { authClient } from "@/lib/authClient";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -29,7 +31,7 @@ export default function LoginPage() {
       if (authError) {
         setError(authError.message || "Authentication failed. Check your credentials.");
       } else {
-        window.location.href = "/dashboard";
+        router.push("/dashboard");
       }
     } catch (err) {
       setError("Unexpected system failure. Please retry.");
