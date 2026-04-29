@@ -6,9 +6,12 @@
     "dev": "turbo dev",
     "build": "turbo build",
     "lint": "turbo lint",
+    "lint:fix": "turbo lint:fix",
     "typecheck": "turbo typecheck",
+    "format": "turbo format:write",
     "format:check": "turbo format:check",
     "format:write": "turbo format:write",
+    "check": "pnpm lint && pnpm typecheck && pnpm format:check",
     "test": "turbo test",
     "start:web": "pnpm --filter @devplays-chess/web dev",
     "dev:web": "pnpm --filter @devplays-chess/web dev",
@@ -18,8 +21,15 @@
     "clean": "rm -rf node_modules apps/*/node_modules packages/*/node_modules .turbo"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "globals": "^16.4.0",
+    "prettier": "^3.6.2",
     "turbo": "^2.5.8",
     "typescript": "^5.9.3",
-    "prettier": "^3.6.2"
+    "typescript-eslint": "^8.46.2"
   }
 }
