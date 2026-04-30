@@ -1,12 +1,7 @@
 import { createClient } from "@convex-dev/better-auth";
 import { convex } from "@convex-dev/better-auth/plugins";
 import type { GenericCtx } from "@convex-dev/better-auth/utils";
-import {
-  checkout,
-  dodopayments,
-  portal,
-  webhooks
-} from "@dodopayments/better-auth";
+import { checkout, dodopayments, portal, webhooks } from "@dodopayments/better-auth";
 import type { BetterAuthOptions } from "better-auth";
 import { betterAuth } from "better-auth";
 import DodoPayments from "dodopayments";
@@ -23,7 +18,7 @@ const DodoClient = process.env.DODO_PAYMENTS_API_KEY
     })
   : null;
 
-const BuildDodoPlugins = () => {
+const buildDodoPlugins = () => {
   if (!DodoClient || !process.env.DODO_DEFAULT_PRODUCT_ID) {
     return [];
   }
@@ -74,15 +69,19 @@ export const authOptions = {
   emailAndPassword: {
     enabled: true
   },
-  plugins: [],
+  trustedOrigins: process.env.SITE_URL ? [process.env.SITE_URL] : undefined,
+  plugins: [convex({ authConfig: AuthConfig }), ...buildDodoPlugins()]
 };
 
-export const createAuthOptions = (
-  ctx: GenericCtx<DataModel>
-): BetterAuthOptions => ({
+export const createAuthOptions = (ctx: GenericCtx<DataModel>): BetterAuthOptions => ({
   ...authOptions,
-  database: authComponent.adapter(ctx),
+  database: authComponent.adapter(ctx)
 });
+
+export const adapterOptions = {
+  ...authOptions,
+  plugins: []
+};
 
 export const options = authOptions;
 

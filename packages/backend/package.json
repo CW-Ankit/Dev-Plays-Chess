@@ -7,7 +7,11 @@
     "deploy": "convex deploy",
     "codegen": "convex dev --once",
     "auth:generate": "auth generate --config ./convex/betterAuth/auth.ts --output ./convex/betterAuth/schema.ts",
-    "typecheck": "echo 'Convex typecheck runs via convex dev codegen'"
+    "lint": "eslint . --max-warnings=0",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "echo 'Convex typecheck runs via convex dev codegen'",
+    "format:check": "prettier --check .",
+    "format:write": "prettier --write ."
   },
   "dependencies": {
     "@convex-dev/better-auth": "^0.10.2",
