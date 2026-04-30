@@ -78,6 +78,11 @@ export const createAuthOptions = (ctx: GenericCtx<DataModel>): BetterAuthOptions
   database: authComponent.adapter(ctx)
 });
 
+export const adapterOptions = {
+  ...authOptions,
+  plugins: []
+};
+
 export const options = authOptions;
 
 export const createAuth = (ctx: GenericCtx<DataModel>) => {
